@@ -898,7 +898,7 @@ module.exports = nextConfig;`,
     return NextResponse.json({
       success: true,
       files,
-      downloadUrl: \`data:application/zip;base64,\${zipBase64}\`,
+      downloadUrl: `data:application/zip;base64,${zipBase64}`,
       preview: '/preview/' + Date.now(),
       message: 'Website generated successfully!'
     });
