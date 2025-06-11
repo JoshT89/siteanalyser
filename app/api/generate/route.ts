@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import JSZip from 'jszip';
 
-interface GenerationRequest {
-  analysisResult: any;
-}
-
-function generatePageContent(websiteData: any): string {
+function generatePageContent(websiteData) {
   const { title, description, images, content, headings } = websiteData;
   
   // Create sections based on headings
-  const sections = headings.filter((h: any) => h.level <= 3).slice(0, 6);
+  const sections = headings.filter(h => h.level <= 3).slice(0, 6);
   
   return `'use client';
 
@@ -169,7 +165,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            ${images.slice(0, 6).map((img: string, index: number) => `
+            ${images.slice(0, 6).map((img, index) => `
             <Card className="group bg-white/70 backdrop-blur-sm border-white/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
               <CardHeader>
                 <div className="relative h-48 rounded-lg overflow-hidden mb-4">
@@ -211,7 +207,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              ${sections.slice(0, 4).map((section: any, index: number) => `
+              ${sections.slice(0, 4).map((section, index) => `
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Star className="h-6 w-6 text-white" />
@@ -289,7 +285,7 @@ export default function HomePage() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Services</h4>
               <ul className="space-y-2">
-                ${sections.slice(0, 4).map((section: any) => `
+                ${sections.slice(0, 4).map(section => `
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">${section.text}</a></li>
                 `).join('')}
               </ul>
@@ -326,11 +322,10 @@ export default function HomePage() {
 }`;
 }
 
-function generateLayoutContent(websiteData: any): string {
+function generateLayoutContent(websiteData) {
   const { title, description } = websiteData;
   
   return `import './globals.css';
-import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 
 const inter = Inter({ 
@@ -346,7 +341,7 @@ const poppins = Poppins({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: '${title}',
   description: '${description}',
   keywords: ['modern', 'professional', 'business', 'services', 'quality'],
@@ -369,8 +364,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
 }) {
   return (
     <html lang="en" className={\`\${inter.variable} \${poppins.variable}\`}>
@@ -528,7 +521,7 @@ html {
 }`;
 }
 
-function generatePackageJson(websiteData: any): string {
+function generatePackageJson(websiteData) {
   const { title } = websiteData;
   
   return JSON.stringify({
@@ -556,9 +549,6 @@ function generatePackageJson(websiteData: any): string {
       '@radix-ui/react-separator': '^1.1.0',
       '@radix-ui/react-slot': '^1.1.0',
       '@radix-ui/react-tabs': '^1.1.0',
-      '@types/node': '^20.6.2',
-      '@types/react': '^18.2.22',
-      '@types/react-dom': '^18.2.7',
       'class-variance-authority': '^0.7.0',
       'clsx': '^2.1.1',
       'lucide-react': '^0.446.0',
@@ -567,8 +557,7 @@ function generatePackageJson(websiteData: any): string {
       'react-dom': '^18.2.0',
       'tailwind-merge': '^2.5.2',
       'tailwindcss': '^3.3.3',
-      'tailwindcss-animate': '^1.0.7',
-      'typescript': '^5.2.2'
+      'tailwindcss-animate': '^1.0.7'
     },
     devDependencies: {
       'autoprefixer': '^10.4.15',
@@ -579,12 +568,12 @@ function generatePackageJson(websiteData: any): string {
   }, null, 2);
 }
 
-function generateReadme(websiteData: any, analysisResult: any): string {
+function generateReadme(websiteData, analysisResult) {
   const { title, description } = websiteData;
   
   return `# ${title}
 
-A modern, professional website built with Next.js 14, TypeScript, and Tailwind CSS.
+A modern, professional website built with Next.js 14, JavaScript, and Tailwind CSS.
 
 ## 🚀 Features
 
@@ -618,7 +607,7 @@ A modern, professional website built with Next.js 14, TypeScript, and Tailwind C
 ## 🛠️ Tech Stack
 
 - **Framework:** Next.js 14
-- **Language:** TypeScript
+- **Language:** JavaScript
 - **Styling:** Tailwind CSS
 - **UI Components:** Radix UI
 - **Icons:** Lucide React
@@ -644,8 +633,8 @@ A modern, professional website built with Next.js 14, TypeScript, and Tailwind C
 \`\`\`
 ├── app/
 │   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
+│   ├── layout.jsx
+│   └── page.jsx
 ├── components/
 │   └── ui/
 ├── lib/
@@ -720,13 +709,13 @@ A modern, professional website built with Next.js 14, TypeScript, and Tailwind C
 ## 🔧 Customization
 
 ### Colors
-Edit the color palette in \`tailwind.config.ts\`
+Edit the color palette in \`tailwind.config.js\`
 
 ### Fonts
-Update font imports in \`app/layout.tsx\`
+Update font imports in \`app/layout.jsx\`
 
 ### Content
-Modify content in \`app/page.tsx\`
+Modify content in \`app/page.jsx\`
 
 ### Styling
 Update styles in \`app/globals.css\`
@@ -750,7 +739,7 @@ Generated: ${new Date().toLocaleDateString()}
 
 export async function POST(request: NextRequest) {
   try {
-    const { analysisResult }: GenerationRequest = await request.json();
+    const { analysisResult } = await request.json();
     
     if (!analysisResult) {
       return NextResponse.json({ error: 'Analysis result is required' }, { status: 400 });
@@ -761,14 +750,14 @@ export async function POST(request: NextRequest) {
     // Generate all files
     const files = [
       {
-        path: 'app/page.tsx',
+        path: 'app/page.jsx', // Changed from page.tsx
         content: generatePageContent(websiteData),
-        type: 'tsx'
+        type: 'jsx' // Changed from tsx
       },
       {
-        path: 'app/layout.tsx',
+        path: 'app/layout.jsx', // Changed from layout.tsx
         content: generateLayoutContent(websiteData),
-        type: 'tsx'
+        type: 'jsx' // Changed from tsx
       },
       {
         path: 'app/globals.css',
@@ -786,10 +775,8 @@ export async function POST(request: NextRequest) {
         type: 'md'
       },
       {
-        path: 'tailwind.config.ts',
-        content: `import type { Config } from 'tailwindcss';
-
-const config: Config = {
+        path: 'tailwind.config.js',
+        content: `const config = {
   darkMode: ['class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -861,8 +848,8 @@ const config: Config = {
   plugins: [require('tailwindcss-animate')],
 };
 
-export default config;`,
-        type: 'ts'
+module.exports = config;`,
+        type: 'js'
       },
       {
         path: 'next.config.js',
@@ -874,9 +861,6 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
 };
 
