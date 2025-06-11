@@ -1,7 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
 import JSZip from 'jszip';
 
-function generatePageContent(websiteData) {
+interface WebsiteData {
+  title: string;
+  description: string;
+  images: string[];
+  content: string;
+  links: string[];
+  metadata: Record<string, string>;
+  headings: { level: number; text: string }[];
+  colors: string[];
+  fonts: string[];
+}
+
+interface AnalysisResult {
+  url: string;
+  websiteData: WebsiteData;
+  performance: {
+    score: number;
+    loadTime: number;
+    size: number;
+    requests: number;
+  };
+  seo: {
+    score: number;
+    issues: string[];
+    recommendations: string[];
+    keywords: string[];
+  };
+  design: {
+    score: number;
+    issues: string[];
+    suggestions: string[];
+  };
+  accessibility: {
+    score: number;
+    issues: string[];
+    fixes: string[];
+  };
+  timestamp: string;
+}
+
+function generatePageContent(websiteData: WebsiteData) {
   const { title, description, images, content, headings } = websiteData;
   
   // Create sections based on headings
@@ -322,7 +362,7 @@ export default function HomePage() {
 }`;
 }
 
-function generateLayoutContent(websiteData) {
+function generateLayoutContent(websiteData: WebsiteData) {
   const { title, description } = websiteData;
   
   return `import './globals.css';
@@ -521,7 +561,7 @@ html {
 }`;
 }
 
-function generatePackageJson(websiteData) {
+function generatePackageJson(websiteData: WebsiteData) {
   const { title } = websiteData;
   
   return JSON.stringify({
@@ -568,7 +608,7 @@ function generatePackageJson(websiteData) {
   }, null, 2);
 }
 
-function generateReadme(websiteData, analysisResult) {
+function generateReadme(websiteData: WebsiteData, analysisResult: AnalysisResult) {
   const { title, description } = websiteData;
   
   return `# ${title}
