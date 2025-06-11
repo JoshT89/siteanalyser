@@ -911,7 +911,3 @@ module.exports = nextConfig;`,
     );
   }
 }
-    }
-    )
-  }
-}
