@@ -40,6 +40,18 @@ interface AnalysisResult {
     headings: { level: number; text: string }[];
     colors: string[];
     fonts: string[];
+    services?: string[];
+    contact?: {
+      phone?: string;
+      email?: string;
+      address?: string;
+    };
+    reviews?: Array<{
+      author: string;
+      rating: number;
+      text: string;
+      date: string;
+    }>;
   };
   performance: {
     score: number;
@@ -57,11 +69,14 @@ interface AnalysisResult {
     score: number;
     issues: string[];
     suggestions: string[];
+    colorScheme: string[];
+    typography: string[];
   };
   accessibility: {
     score: number;
     issues: string[];
     fixes: string[];
+    violations: string[];
   };
   timestamp: string;
 }
@@ -166,8 +181,23 @@ export default function Home() {
         throw new Error(errorData.error || 'Failed to generate website');
       }
       
-      const result = await response.json();
-      setGeneratedSite(result);
+      // Handle ZIP file download
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      
+      // Get filename from response headers
+      const contentDisposition = response.headers.get('content-disposition');
+      const filename = contentDisposition 
+        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') 
+        : `${analysisResult.websiteData.title.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'website'}.zip`;
+      
+      setGeneratedSite({
+        success: true,
+        files: [], // We don't need to show individual files for ZIP download
+        downloadUrl,
+        preview: downloadUrl,
+        message: `Successfully generated website! Ready for download.`
+      });
       
     } catch (error) {
       console.error('Generation error:', error);
@@ -186,6 +216,11 @@ export default function Home() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    // Clean up the blob URL after download
+    setTimeout(() => {
+      URL.revokeObjectURL(generatedSite.downloadUrl);
+    }, 1000);
   };
 
   const getScoreColor = (score: number) => {
@@ -213,11 +248,11 @@ export default function Home() {
               </div>
             </div>
             <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-6">
-              Website Analyzer & Rebuilder
+              AI-Powered Website Analyzer & Rebuilder
             </h1>
             <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-              Transform any website into a modern, fast, and beautiful Next.js application. 
-              Analyze performance, extract content, and rebuild with cutting-edge technology.
+              Transform any website into a modern, fast, and beautiful Next.js application with AI-enhanced content, 
+              complete functionality, and professional design. Extract content, analyze performance, and rebuild with cutting-edge technology.
             </p>
             
             {/* URL Input */}
@@ -714,14 +749,24 @@ export default function Home() {
                     <span className="font-medium">{generatedSite.message}</span>
                   </div>
                   <div className="bg-white/50 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Generated Files:</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">Generated Structure:</h4>
                     <ul className="text-sm text-gray-600 space-y-1">
-                      {generatedSite.files.map((file, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <FileText className="h-3 w-3" />
-                          {file.path}
-                        </li>
-                      ))}
+                      <li className="flex items-center gap-2">
+                        <FileText className="h-3 w-3" />
+                        Complete Next.js application
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <FileText className="h-3 w-3" />
+                        All UI components and configurations
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <FileText className="h-3 w-3" />
+                        AI-enhanced content and styling
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <FileText className="h-3 w-3" />
+                        Ready for deployment
+                      </li>
                     </ul>
                   </div>
                   <div className="flex gap-4">
@@ -757,9 +802,9 @@ export default function Home() {
                 <div className="p-2 bg-blue-100 w-fit rounded-lg mb-4">
                   <Search className="h-6 w-6 text-blue-600" />
                 </div>
-                <CardTitle>Real Website Analysis</CardTitle>
+                <CardTitle>AI-Powered Analysis</CardTitle>
                 <CardDescription>
-                  Comprehensive analysis of performance, SEO, accessibility, and design using real data
+                  Comprehensive analysis with AI-enhanced content extraction, service detection, and intelligent insights
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -769,9 +814,9 @@ export default function Home() {
                 <div className="p-2 bg-green-100 w-fit rounded-lg mb-4">
                   <Code className="h-6 w-6 text-green-600" />
                 </div>
-                <CardTitle>Professional Rebuild</CardTitle>
+                <CardTitle>Complete Next.js Structure</CardTitle>
                 <CardDescription>
-                  Generate production-ready Next.js sites with modern design and optimal performance
+                  Generate complete, functional Next.js applications with all components, configurations, and dependencies
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -781,9 +826,9 @@ export default function Home() {
                 <div className="p-2 bg-purple-100 w-fit rounded-lg mb-4">
                   <Sparkles className="h-6 w-6 text-purple-600" />
                 </div>
-                <CardTitle>Content Extraction</CardTitle>
+                <CardTitle>AI Content Enhancement</CardTitle>
                 <CardDescription>
-                  Intelligent extraction of text, images, and structure from any website
+                  AI-powered content generation, service detection, contact extraction, and review analysis
                 </CardDescription>
               </CardHeader>
             </Card>
