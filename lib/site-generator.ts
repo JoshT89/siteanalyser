@@ -866,6 +866,7 @@ export default function RootLayout({
     const title = analysis.websiteData.title || 'generated-website';
     const name = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
+    // Only include valid Radix UI packages
     return JSON.stringify({
       name: name,
       version: '1.0.0',
@@ -878,19 +879,12 @@ export default function RootLayout({
         export: 'next build && next export'
       },
       dependencies: {
-        '@hookform/resolvers': '^3.9.0',
         '@radix-ui/react-accordion': '^1.2.0',
         '@radix-ui/react-alert-dialog': '^1.1.1',
         '@radix-ui/react-avatar': '^1.1.0',
-        '@radix-ui/react-button': '^1.1.0',
-        '@radix-ui/react-card': '^1.1.0',
         '@radix-ui/react-dialog': '^1.1.1',
         '@radix-ui/react-dropdown-menu': '^2.1.1',
         '@radix-ui/react-label': '^2.1.0',
-        '@radix-ui/react-progress': '^1.1.0',
-        '@radix-ui/react-separator': '^1.1.0',
-        '@radix-ui/react-slot': '^1.1.0',
-        '@radix-ui/react-tabs': '^1.1.0',
         '@types/node': '^20.6.2',
         '@types/react': '^18.2.22',
         '@types/react-dom': '^18.2.7',

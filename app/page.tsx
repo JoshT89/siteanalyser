@@ -98,6 +98,9 @@ export default function Home() {
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generatedSite, setGeneratedSite] = useState<GeneratedSite | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAutoStarting, setIsAutoStarting] = useState(false);
+  const [autoStartProgress, setAutoStartProgress] = useState(0);
+  const [autoStartResult, setAutoStartResult] = useState<{ url: string; message: string } | null>(null);
 
   const handleAnalyze = async () => {
     if (!url) return;
@@ -221,6 +224,45 @@ export default function Home() {
     setTimeout(() => {
       URL.revokeObjectURL(generatedSite.downloadUrl);
     }, 1000);
+  };
+
+  const handleAutoStart = async () => {
+    if (!analysisResult) return;
+    setIsAutoStarting(true);
+    setAutoStartProgress(0);
+    setAutoStartResult(null);
+    setError(null);
+    try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setAutoStartProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 800);
+      const response = await fetch('/api/autostart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ analysisResult }),
+      });
+      clearInterval(progressInterval);
+      setAutoStartProgress(100);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to auto start app');
+      }
+      const result = await response.json();
+      setAutoStartResult({ url: result.url, message: result.message || 'App started successfully!' });
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to auto start app');
+    } finally {
+      setIsAutoStarting(false);
+    }
   };
 
   const getScoreColor = (score: number) => {
@@ -769,10 +811,14 @@ export default function Home() {
                       </li>
                     </ul>
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 flex-wrap">
                     <Button onClick={handleDownload} className="flex items-center gap-2">
                       <Download className="h-4 w-4" />
                       Download ZIP
+                    </Button>
+                    <Button onClick={handleAutoStart} disabled={isAutoStarting} variant="secondary" className="flex items-center gap-2">
+                      <Zap className="h-4 w-4" />
+                      {isAutoStarting ? 'Starting...' : 'Auto Start'}
                     </Button>
                     <Button variant="outline" className="flex items-center gap-2" asChild>
                       <a href={analysisResult.url} target="_blank" rel="noopener noreferrer">
@@ -781,6 +827,21 @@ export default function Home() {
                       </a>
                     </Button>
                   </div>
+                  {isAutoStarting && (
+                    <div className="mt-4">
+                      <Progress value={autoStartProgress} className="mb-2" />
+                      <span className="text-sm text-gray-600">Auto starting app... {Math.round(autoStartProgress)}%</span>
+                    </div>
+                  )}
+                  {autoStartResult && (
+                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-green-700 text-sm font-medium mb-1">{autoStartResult.message}</p>
+                      <p className="text-green-700 text-sm">
+                        Your app is running locally at:
+                        <a href={autoStartResult.url} target="_blank" rel="noopener noreferrer" className="ml-2 underline text-blue-700">{autoStartResult.url}</a>
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
