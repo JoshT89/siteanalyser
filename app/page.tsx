@@ -150,7 +150,14 @@ export default function Home() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to analyze website');
+        let errorMessage = errorData.error || 'Failed to analyze website';
+        
+        // Add helpful context for API key issues
+        if (errorMessage.includes('Google API key')) {
+          errorMessage += '\n\nTo enable full analysis with PageSpeed Insights, please configure a Google API key in your environment variables.';
+        }
+        
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
@@ -350,6 +357,10 @@ export default function Home() {
                   </CardTitle>
                   <CardDescription>
                     Paste any website URL to start the analysis and rebuilding process
+                    <br />
+                    <span className="text-xs text-blue-600 mt-1 block">
+                      💡 For comprehensive analysis with PageSpeed Insights, configure a Google API key
+                    </span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -382,7 +393,7 @@ export default function Home() {
                   </div>
                   {error && (
                     <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-red-700 text-sm">{error}</p>
+                      <p className="text-red-700 text-sm whitespace-pre-line">{error}</p>
                     </div>
                   )}
                 </CardContent>
