@@ -55,7 +55,7 @@ export interface AnalysisResult {
   seo: SEOAnalysis;
   design: DesignAnalysis;
   accessibility: AccessibilityAnalysis;
-  timestamp: Date;
+  timestamp: string;
 }
 
 export class WebsiteAnalyzer {
@@ -375,15 +375,15 @@ export class WebsiteAnalyzer {
         this.analyzeAccessibility(websiteData)
       ]);
       
-      return {
-        url,
-        websiteData,
-        performance,
-        seo,
-        design,
-        accessibility,
-        timestamp: new Date()
-      };
+          return {
+      url,
+      websiteData,
+      performance,
+      seo,
+      design,
+      accessibility,
+      timestamp: new Date().toISOString()
+    };
     } catch (error) {
       console.error('Error analyzing website:', error);
       throw new Error('Failed to analyze website');
