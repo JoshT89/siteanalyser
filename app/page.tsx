@@ -56,8 +56,23 @@ interface AnalysisResult {
   performance: {
     score: number;
     loadTime: number;
-    size: number;
-    requests: number;
+    domContentLoaded: number;
+    firstPaint: number;
+    firstContentfulPaint: number;
+    largestContentfulPaint: number;
+    cumulativeLayoutShift: number;
+    totalBlockingTime: number;
+    speedIndex: number;
+    totalSize: number;
+    imageSize: number;
+    scriptSize: number;
+    cssSize: number;
+    requestCount: number;
+    imageCount: number;
+    scriptCount: number;
+    cssCount: number;
+    issues: string[];
+    recommendations: string[];
   };
   seo: {
     score: number;
@@ -81,26 +96,26 @@ interface AnalysisResult {
   timestamp: string;
 }
 
-interface GeneratedSite {
-  success: boolean;
-  files: any[];
-  downloadUrl: string;
-  preview: string;
-  message: string;
-}
+// interface GeneratedSite {
+//   success: boolean;
+//   files: any[];
+//   downloadUrl: string;
+//   preview: string;
+//   message: string;
+// }
 
 export default function Home() {
   const [url, setUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
-  const [generatedSite, setGeneratedSite] = useState<GeneratedSite | null>(null);
+  // const [isGenerating, setIsGenerating] = useState(false);
+  // const [generationProgress, setGenerationProgress] = useState(0);
+  // const [generatedSite, setGeneratedSite] = useState<GeneratedSite | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isAutoStarting, setIsAutoStarting] = useState(false);
-  const [autoStartProgress, setAutoStartProgress] = useState(0);
-  const [autoStartResult, setAutoStartResult] = useState<{ url: string; message: string } | null>(null);
+  // const [isAutoStarting, setIsAutoStarting] = useState(false);
+  // const [autoStartProgress, setAutoStartProgress] = useState(0);
+  // const [autoStartResult, setAutoStartResult] = useState<{ url: string; message: string } | null>(null);
 
   const handleAnalyze = async () => {
     if (!url) return;
@@ -149,121 +164,121 @@ export default function Home() {
     }
   };
 
-  const handleGenerate = async () => {
-    if (!analysisResult) return;
+  // const handleGenerate = async () => {
+  //   if (!analysisResult) return;
     
-    setIsGenerating(true);
-    setGenerationProgress(0);
-    setError(null);
+  //   setIsGenerating(true);
+  //   setGenerationProgress(0);
+  //   setError(null);
     
-    try {
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setGenerationProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return prev + Math.random() * 10;
-        });
-      }, 800);
+  //   try {
+  //     // Simulate progress
+  //     const progressInterval = setInterval(() => {
+  //       setGenerationProgress(prev => {
+  //         if (prev >= 90) {
+  //           clearInterval(progressInterval);
+  //           return prev;
+  //         }
+  //         return prev + Math.random() * 10;
+  //       });
+  //     }, 800);
       
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ analysisResult }),
-      });
+  //     const response = await fetch('/api/generate', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ analysisResult }),
+  //     });
       
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
+  //     clearInterval(progressInterval);
+  //     setGenerationProgress(100);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate website');
-      }
+  //     if (!response.ok) {
+  //         const errorData = await response.json();
+  //         throw new Error(errorData.error || 'Failed to generate website');
+  //     }
       
-      // Handle ZIP file download
-      const blob = await response.blob();
-      const downloadUrl = URL.createObjectURL(blob);
+  //     // Handle ZIP file download
+  //     const blob = await response.blob();
+  //     const downloadUrl = URL.createObjectURL(blob);
       
-      // Get filename from response headers
-      const contentDisposition = response.headers.get('content-disposition');
-      const filename = contentDisposition 
-        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') 
-        : `${analysisResult.websiteData.title.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'website'}.zip`;
+  //     // Get filename from response headers
+  //     const contentDisposition = response.headers.get('content-disposition');
+  //     const filename = contentDisposition 
+  //       ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') 
+  //       : `${analysisResult.websiteData.title.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'website'}.zip`;
       
-      setGeneratedSite({
-        success: true,
-        files: [], // We don't need to show individual files for ZIP download
-        downloadUrl,
-        preview: downloadUrl,
-        message: `Successfully generated website! Ready for download.`
-      });
+  //     setGeneratedSite({
+  //       success: true,
+  //       files: [], // We don't need to show individual files for ZIP download
+  //       downloadUrl,
+  //       preview: downloadUrl,
+  //       message: `Successfully generated website! Ready for download.`
+  //     });
       
-    } catch (error) {
-      console.error('Generation error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to generate website');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  //   } catch (error) {
+  //     console.error('Generation error:', error);
+  //     setError(error instanceof Error ? error.message : 'Failed to generate website');
+  //   } finally {
+  //     setIsGenerating(false);
+  //   }
+  // };
 
-  const handleDownload = () => {
-    if (!generatedSite?.downloadUrl) return;
+  // const handleDownload = () => {
+  //   if (!generatedSite?.downloadUrl) return;
     
-    const link = document.createElement('a');
-    link.href = generatedSite.downloadUrl;
-    link.download = `${analysisResult?.websiteData.title.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'website'}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  //   const link = document.createElement('a');
+  //   link.href = generatedSite.downloadUrl;
+  //   link.download = `${analysisResult?.websiteData.title.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'website'}.zip`;
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
     
-    // Clean up the blob URL after download
-    setTimeout(() => {
-      URL.revokeObjectURL(generatedSite.downloadUrl);
-    }, 1000);
-  };
+  //   // Clean up the blob URL after download
+  //   setTimeout(() => {
+  //     URL.revokeObjectURL(generatedSite.downloadUrl);
+  //   }, 1000);
+  // };
 
-  const handleAutoStart = async () => {
-    if (!analysisResult) return;
-    setIsAutoStarting(true);
-    setAutoStartProgress(0);
-    setAutoStartResult(null);
-    setError(null);
-    try {
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setAutoStartProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return prev + Math.random() * 10;
-        });
-      }, 800);
-      const response = await fetch('/api/autostart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ analysisResult }),
-      });
-      clearInterval(progressInterval);
-      setAutoStartProgress(100);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to auto start app');
-      }
-      const result = await response.json();
-      setAutoStartResult({ url: result.url, message: result.message || 'App started successfully!' });
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to auto start app');
-    } finally {
-      setIsAutoStarting(false);
-    }
-  };
+  // const handleAutoStart = async () => {
+  //   if (!analysisResult) return;
+  //   setIsAutoStarting(true);
+  //   setAutoStartProgress(0);
+  //   setAutoStartResult(null);
+  //   setError(null);
+  //   try {
+  //     // Simulate progress
+  //     const progressInterval = setInterval(() => {
+  //       setAutoStartProgress(prev => {
+  //         if (prev >= 90) {
+  //           clearInterval(progressInterval);
+  //           return prev;
+  //         }
+  //         return prev + Math.random() * 10;
+  //       });
+  //     }, 800);
+  //     const response = await fetch('/api/autostart', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ analysisResult }),
+  //     });
+  //     clearInterval(progressInterval);
+  //     setAutoStartProgress(100);
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.error || 'Failed to auto start app');
+  //     }
+  //     const result = await response.json();
+  //     setAutoStartResult({ url: result.url, message: result.message || 'App started successfully!' });
+  //   } catch (error) {
+  //     setError(error instanceof Error ? error.message : 'Failed to auto start app');
+  //   } finally {
+  //     setIsAutoStarting(false);
+  //   }
+  // };
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
@@ -286,15 +301,43 @@ export default function Home() {
           <div className="text-center">
             <div className="flex justify-center mb-8">
               <div className="p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-                <Sparkles className="h-12 w-12 text-blue-600" />
+                <svg
+                  width="120"
+                  height="90"
+                  viewBox="0 0 120 90"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-label="Site Analyzer Logo"
+                  role="img"
+                  className="mx-auto"
+                >
+                  {/* Monitor */}
+                  <rect x="20" y="20" width="80" height="40" rx="5" fill="#294057" stroke="#2C3E50" strokeWidth="2" />
+                  <rect x="27" y="27" width="66" height="26" rx="3" fill="#35516B" />
+                  {/* Monitor stand */}
+                  <rect x="45" y="62" width="30" height="6" rx="2" fill="#294057" stroke="#2C3E50" strokeWidth="1.5" />
+                  <rect x="57" y="68" width="6" height="5" rx="2" fill="#294057" stroke="#2C3E50" strokeWidth="1.5" />
+                  {/* https:// text */}
+                  <text x="32" y="45" fontSize="10" fontFamily="monospace" fill="#fff">https://</text>
+                  {/* Magnifying glass */}
+                  <g>
+                    <circle cx="85" cy="45" r="8" fill="#4CAF50" stroke="#fff" strokeWidth="2" />
+                    <circle cx="85" cy="45" r="5" fill="#fff" fillOpacity="0.2" />
+                    <rect x="91" y="51" width="8" height="2.5" rx="1.25" fill="#2C3E50" transform="rotate(45 91 51)" />
+                  </g>
+                  {/* Scan line animation */}
+                  <rect id="scan-line" x="27" y="27" width="66" height="4" rx="2" fill="#4CAF50" fillOpacity="0.18">
+                    <animate attributeName="y" values="27;49" dur="1.5s" repeatCount="indefinite" />
+                  </rect>
+                </svg>
               </div>
             </div>
             <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-6">
-              AI-Powered Website Analyzer & Rebuilder
+              AI-Powered Website Analyzer
             </h1>
             <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-              Transform any website into a modern, fast, and beautiful Next.js application with AI-enhanced content, 
-              complete functionality, and professional design. Extract content, analyze performance, and rebuild with cutting-edge technology.
+              Analyze any website for performance, SEO, design, and accessibility issues with AI-enhanced insights. 
+              Get comprehensive analysis with detailed recommendations for improvement.
             </p>
             
             {/* URL Input */}
@@ -368,9 +411,12 @@ export default function Home() {
       {/* Analysis Results */}
       {analysisResult && !isAnalyzing && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Analysis Results</h2>
-            <p className="text-gray-600">Comprehensive analysis of {analysisResult.websiteData.title}</p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-1">Analysis Results <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Live Analysis</span></h2>
+              <p className="text-gray-600">Comprehensive, real-time analysis of <span className="font-semibold">{analysisResult.url}</span></p>
+            </div>
+            <div className="text-sm text-gray-500">Scanned: {new Date(analysisResult.timestamp).toLocaleString()}</div>
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
@@ -378,7 +424,7 @@ export default function Home() {
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="performance">Performance</TabsTrigger>
               <TabsTrigger value="seo">SEO</TabsTrigger>
-              <TabsTrigger value="design">Design</TabsTrigger>
+              <TabsTrigger value="design">Best Practices</TabsTrigger>
               <TabsTrigger value="accessibility">Accessibility</TabsTrigger>
             </TabsList>
 
@@ -404,7 +450,6 @@ export default function Home() {
                     </Badge>
                   </CardContent>
                 </Card>
-
                 <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -425,12 +470,11 @@ export default function Home() {
                     </Badge>
                   </CardContent>
                 </Card>
-
                 <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-2">
                       <Palette className="h-4 w-4" />
-                      Design
+                      Best Practices
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -446,7 +490,6 @@ export default function Home() {
                     </Badge>
                   </CardContent>
                 </Card>
-
                 <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -468,8 +511,7 @@ export default function Home() {
                   </CardContent>
                 </Card>
               </div>
-
-              <Card className="bg-white/70 backdrop-blur-sm border-white/20">
+              <Card className="bg-white/70 backdrop-blur-sm border-white/20 mt-6">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
@@ -485,33 +527,11 @@ export default function Home() {
                     <h4 className="font-semibold text-gray-900">Description</h4>
                     <p className="text-gray-600">{analysisResult.websiteData.description || 'No description found'}</p>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Content Preview</h4>
-                    <p className="text-gray-600 text-sm">{analysisResult.websiteData.content.substring(0, 200)}...</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Images Found ({analysisResult.websiteData.images.length})</h4>
-                    <div className="grid grid-cols-4 gap-4 mt-2">
-                      {analysisResult.websiteData.images.slice(0, 4).map((img, index) => (
-                        <img key={index} src={img} alt="" className="w-full h-24 object-cover rounded-lg" />
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Headings Structure</h4>
-                    <div className="space-y-1 mt-2">
-                      {analysisResult.websiteData.headings.slice(0, 5).map((heading, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">H{heading.level}</Badge>
-                          <span className="text-sm text-gray-600">{heading.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
+            {/* Performance Tab */}
             <TabsContent value="performance" className="space-y-6">
               <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                 <CardHeader>
@@ -521,52 +541,70 @@ export default function Home() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">{analysisResult.performance.score}</div>
-                      <div className="text-sm text-gray-600">Performance Score</div>
+                      <div className="text-2xl font-bold text-blue-600 mb-1">{analysisResult.performance.score}</div>
+                      <div className="text-xs text-gray-600">Score</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">{analysisResult.performance.loadTime.toFixed(1)}s</div>
-                      <div className="text-sm text-gray-600">Load Time</div>
+                      <div className="text-2xl font-bold text-blue-600 mb-1">{(analysisResult.performance.loadTime / 1000).toFixed(1)}s</div>
+                      <div className="text-xs text-gray-600">Time to Interactive</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">{analysisResult.performance.size.toFixed(1)}MB</div>
-                      <div className="text-sm text-gray-600">Total Size</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">{analysisResult.performance.requests}</div>
-                      <div className="text-sm text-gray-600">HTTP Requests</div>
+                      <div className="text-2xl font-bold text-blue-600 mb-1">{(analysisResult.performance.totalSize / 1024 / 1024).toFixed(2)}MB</div>
+                      <div className="text-xs text-gray-600">Total Page Size</div>
                     </div>
                   </div>
-                  
                   <Separator />
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Performance Improvements</h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                        Performance Issues
+                      </h4>
+                      <ul className="space-y-2">
+                        {analysisResult.performance.issues && analysisResult.performance.issues.length > 0 ? (
+                          analysisResult.performance.issues.map((issue, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
+                              {issue}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            No major performance issues detected
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Optimize images with Next.js Image component</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Implement lazy loading and code splitting</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Minify and compress CSS/JavaScript</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Enable modern compression (Brotli/Gzip)</span>
-                      </li>
-                    </ul>
+                        Recommendations
+                      </h4>
+                      <ul className="space-y-2">
+                        {analysisResult.performance.recommendations && analysisResult.performance.recommendations.length > 0 ? (
+                          analysisResult.performance.recommendations.map((rec, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                              {rec}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            Website performance is well optimized
+                          </li>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
+            {/* SEO Tab */}
             <TabsContent value="seo" className="space-y-6">
               <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                 <CardHeader>
@@ -583,12 +621,19 @@ export default function Home() {
                         Issues Found
                       </h4>
                       <ul className="space-y-2">
-                        {analysisResult.seo.issues.map((issue, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                            <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
-                            {issue}
+                        {analysisResult.seo.issues && analysisResult.seo.issues.length > 0 ? (
+                          analysisResult.seo.issues.map((issue, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
+                              {issue}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            No major SEO issues detected
                           </li>
-                        ))}
+                        )}
                       </ul>
                     </div>
                     <div>
@@ -597,38 +642,33 @@ export default function Home() {
                         Recommendations
                       </h4>
                       <ul className="space-y-2">
-                        {analysisResult.seo.recommendations.map((rec, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
-                            {rec}
+                        {analysisResult.seo.recommendations && analysisResult.seo.recommendations.length > 0 ? (
+                          analysisResult.seo.recommendations.map((rec, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                              {rec}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            Website SEO is well optimized
                           </li>
-                        ))}
+                        )}
                       </ul>
-                    </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Top Keywords</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {analysisResult.seo.keywords.slice(0, 10).map((keyword, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {keyword}
-                        </Badge>
-                      ))}
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
+            {/* Best Practices Tab (Design) */}
             <TabsContent value="design" className="space-y-6">
               <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Palette className="h-5 w-5" />
-                    Design Analysis
+                    Best Practices
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -636,15 +676,22 @@ export default function Home() {
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                        Design Issues
+                        Issues
                       </h4>
                       <ul className="space-y-2">
-                        {analysisResult.design.issues.map((issue, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                            <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
-                            {issue}
+                        {analysisResult.design.issues && analysisResult.design.issues.length > 0 ? (
+                          analysisResult.design.issues.map((issue, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
+                              {issue}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            No major best practices issues detected
                           </li>
-                        ))}
+                        )}
                       </ul>
                     </div>
                     <div>
@@ -653,48 +700,27 @@ export default function Home() {
                         Suggestions
                       </h4>
                       <ul className="space-y-2">
-                        {analysisResult.design.suggestions.map((suggestion, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
-                            {suggestion}
+                        {analysisResult.design.suggestions && analysisResult.design.suggestions.length > 0 ? (
+                          analysisResult.design.suggestions.map((suggestion, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+                              {suggestion}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            Website follows best practices
                           </li>
-                        ))}
+                        )}
                       </ul>
-                    </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Color Palette</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {analysisResult.websiteData.colors.map((color, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <div 
-                              className="w-6 h-6 rounded border border-gray-300"
-                              style={{ backgroundColor: color }}
-                            />
-                            <span className="text-xs text-gray-600">{color}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Typography</h4>
-                      <div className="space-y-1">
-                        {analysisResult.websiteData.fonts.map((font, index) => (
-                          <Badge key={index} variant="outline" className="text-xs mr-2">
-                            {font}
-                          </Badge>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
+            {/* Accessibility Tab */}
             <TabsContent value="accessibility" className="space-y-6">
               <Card className="bg-white/70 backdrop-blur-sm border-white/20">
                 <CardHeader>
@@ -711,26 +737,40 @@ export default function Home() {
                         Accessibility Issues
                       </h4>
                       <ul className="space-y-2">
-                        {analysisResult.accessibility.issues.map((issue, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                            <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
-                            {issue}
+                        {analysisResult.accessibility.issues && analysisResult.accessibility.issues.length > 0 ? (
+                          analysisResult.accessibility.issues.map((issue, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
+                              {issue}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            No major accessibility issues detected
                           </li>
-                        ))}
+                        )}
                       </ul>
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600" />
-                        Recommended Fixes
+                        Fixes & Recommendations
                       </h4>
                       <ul className="space-y-2">
-                        {analysisResult.accessibility.fixes.map((fix, index) => (
-                          <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
-                            {fix}
+                        {analysisResult.accessibility.fixes && analysisResult.accessibility.fixes.length > 0 ? (
+                          analysisResult.accessibility.fixes.map((fix, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                              {fix}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-sm text-green-600 flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            Website accessibility is well optimized
                           </li>
-                        ))}
+                        )}
                       </ul>
                     </div>
                   </div>
@@ -739,7 +779,8 @@ export default function Home() {
             </TabsContent>
           </Tabs>
 
-          {/* Generate New Site Section */}
+          {/* Generate New Site Section - TEMPORARILY DISABLED */}
+          {/* 
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 mt-12">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -846,6 +887,7 @@ export default function Home() {
               )}
             </CardContent>
           </Card>
+          */}
         </div>
       )}
 
@@ -857,7 +899,7 @@ export default function Home() {
             <p className="text-xl text-gray-600">Everything you need to transform any website</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="bg-white/70 backdrop-blur-sm border-white/20 hover:shadow-xl transition-shadow">
               <CardHeader>
                 <div className="p-2 bg-blue-100 w-fit rounded-lg mb-4">
@@ -865,19 +907,7 @@ export default function Home() {
                 </div>
                 <CardTitle>AI-Powered Analysis</CardTitle>
                 <CardDescription>
-                  Comprehensive analysis with AI-enhanced content extraction, service detection, and intelligent insights
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-white/70 backdrop-blur-sm border-white/20 hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="p-2 bg-green-100 w-fit rounded-lg mb-4">
-                  <Code className="h-6 w-6 text-green-600" />
-                </div>
-                <CardTitle>Complete Next.js Structure</CardTitle>
-                <CardDescription>
-                  Generate complete, functional Next.js applications with all components, configurations, and dependencies
+                  Advanced website analysis using cutting-edge AI technology. Extracts comprehensive data including content, images, links, metadata, and structural elements. Provides intelligent insights on performance, SEO, design, and accessibility with detailed recommendations for improvement.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -889,7 +919,7 @@ export default function Home() {
                 </div>
                 <CardTitle>AI Content Enhancement</CardTitle>
                 <CardDescription>
-                  AI-powered content generation, service detection, contact extraction, and review analysis
+                  Intelligent content processing and enhancement powered by AI. Automatically detects business services, extracts contact information, analyzes customer reviews, and identifies key business elements. Transforms raw website data into actionable business intelligence.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -901,7 +931,7 @@ export default function Home() {
                 </div>
                 <CardTitle>Mobile-First Design</CardTitle>
                 <CardDescription>
-                  Responsive design that works perfectly across all devices and screen sizes
+                  Comprehensive mobile responsiveness analysis and optimization. Evaluates design across all device sizes, ensures touch-friendly interfaces, and optimizes layouts for mobile users. Provides detailed feedback on responsive design implementation and mobile user experience.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -913,19 +943,7 @@ export default function Home() {
                 </div>
                 <CardTitle>Performance Optimization</CardTitle>
                 <CardDescription>
-                  Significant improvements in loading speed, SEO, and user experience
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-white/70 backdrop-blur-sm border-white/20 hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="p-2 bg-indigo-100 w-fit rounded-lg mb-4">
-                  <Download className="h-6 w-6 text-indigo-600" />
-                </div>
-                <CardTitle>Export & Deploy</CardTitle>
-                <CardDescription>
-                  Download your rebuilt site as a ZIP file ready for deployment anywhere
+                  Real-time performance analysis with detailed metrics including load times, file sizes, and resource optimization. Analyzes Core Web Vitals, identifies performance bottlenecks, and provides specific recommendations for speed improvements, SEO optimization, and enhanced user experience.
                 </CardDescription>
               </CardHeader>
             </Card>

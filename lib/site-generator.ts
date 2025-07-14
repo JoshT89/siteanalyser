@@ -1,3 +1,5 @@
+// TEMPORARILY DISABLED - Site Generator
+/*
 import { AnalysisResult } from './website-analyzer';
 
 interface GeneratedSite {
@@ -1083,4 +1085,5 @@ This project is generated for demonstration purposes. Please ensure you have the
   }
 }
 
-export const siteGenerator = new SiteGenerator(); 
+export const siteGenerator = new SiteGenerator();
+*/ 

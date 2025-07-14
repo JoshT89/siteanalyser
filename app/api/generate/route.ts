@@ -1,3 +1,5 @@
+// TEMPORARILY DISABLED - Generate API Route
+/*
 import { NextRequest, NextResponse } from 'next/server';
 import JSZip from 'jszip';
 import { siteGenerator } from '@/lib/site-generator';
@@ -55,4 +57,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
+*/ 

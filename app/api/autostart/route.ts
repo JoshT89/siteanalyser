@@ -1,32 +1,46 @@
+// TEMPORARILY DISABLED - Autostart API Route
+/*
 import { NextRequest, NextResponse } from 'next/server';
-import { siteGenerator } from '@/lib/site-generator';
-import { AnalysisResult } from '@/lib/website-analyzer';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { spawn } from 'child_process';
+import { siteGenerator } from '@/lib/site-generator';
+import { AnalysisResult } from '@/lib/website-analyzer';
 
 interface GenerationRequest {
   analysisResult: AnalysisResult;
 }
 
-const GENERATED_DIR = path.resolve(process.cwd(), '../generated-site');
+const GENERATED_DIR = path.join(process.cwd(), 'generated-sites');
 
-async function writeFiles(files: { path: string; content: string }[]) {
+async function writeFiles(files: any[]) {
   for (const file of files) {
     const filePath = path.join(GENERATED_DIR, file.path);
-    await fs.mkdir(path.dirname(filePath), { recursive: true });
-    await fs.writeFile(filePath, file.content, 'utf8');
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, file.content);
   }
 }
 
-function runCommand(cmd: string, args: string[], cwd: string): Promise<void> {
+async function runCommand(command: string, args: string[], cwd: string) {
+  const { spawn } = require('child_process');
   return new Promise((resolve, reject) => {
-    const proc = spawn(cmd, args, { cwd, shell: true, stdio: 'inherit' });
-    proc.on('close', (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`${cmd} ${args.join(' ')} failed with code ${code}`));
+    const child = spawn(command, args, { 
+      cwd, 
+      stdio: 'pipe',
+      shell: true 
     });
-    proc.on('error', reject);
+    
+    child.on('close', (code: number) => {
+      if (code === 0) {
+        resolve(code);
+      } else {
+        reject(new Error(`Command failed with code ${code}`));
+      }
+    });
+    
+    child.on('error', (error: Error) => {
+      reject(error);
+    });
   });
 }
 
@@ -77,4 +91,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
+*/ 
